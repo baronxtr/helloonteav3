@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello On Tea DApp</title>
+  <!-- CSS akan dimasukkan langsung di tab CSS CodePen, jadi hapus link eksternal -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: url(https://media.stockimg.ai/image/v2/It7y_e6p9B3Y.png) no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(0, 128, 128, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 128, 0.5);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      color: #fff;
+    }
+
+    h1 {
+      color: #000080;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .wallet-section, .contract-section, .audio-section {
+      margin: 20px 0;
+    }
+
+    button {
+      background-color: #000080;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #003366;
+    }
+
+    button:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #008080;
+      margin-right: 10px;
+      width: 200px;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+
+    span {
+      color: #e6f3f3;
+      font-weight: bold;
+    }
+
+    .history-section {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .history-section h3 {
+      color: #000080;
+    }
+
+    .history-section ul {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+
+    .history-section li {
+      padding: 5px;
+      border-bottom: 1px solid #008080;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hello on Tea</h1>
+    <div class="wallet-section">
+      <button id="connectButton">Connect Wallet</button>
+      <p>Wallet: <span id="account">Not connected</span></p>
+    </div>
+    
+    <div class="contract-section">
+      <p>Message: <span id="currentMessage">Loading...</span></p>
+      <p>Total Clicks: <span id="clickCount">Loading...</span></p>
+      <button id="sayHelloButton" disabled>Say Hello</button>
+      
+      <div class="message-input">
+        <input type="text" id="newMessage" placeholder="Set a new message">
+        <button id="setMessageButton" disabled>Update Message</button>
+      </div>
+      
+      <div class="history-section">
+        <h3>Say Hello History</h3>
+        <ul id="helloHistory"></ul>
+      </div>
+    </div>
+    
+    <div class="audio-section">
+      <button id="audioButton">Play Music</button>
+      <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
+    </div>
+  </div>
+  <!-- Memuat Ethers.js langsung di HTML -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <!-- JS akan dimasukkan langsung di tab JS CodePen, jadi hapus script eksternal -->
+  <script>
+    console.log('Ethers.js loaded:', typeof ethers);
+
+    const teaSepoliaConfig = {
+      chainId: '0x27ea',
+      chainName: 'Tea Sepolia',
+      rpcUrls: ['https://tea-sepolia.g.alchemy.com/public'],
+      nativeCurrency: {
+        name: 'TEA',
+        symbol: 'TEA',
+        decimals: 18
+      },
+      blockExplorerUrls: ['https://sepolia.tea.xyz']
+    };
+
+    const contractAddress = '0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E';
+    const contractABI = [
+      {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"message","type":"string"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"}],"name":"HelloSaid","type":"event"},
+      {"inputs":[],"name":"sayHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"string","name":"newMessage","type":"string"}],"name":"setMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[],"name":"clickCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"message","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
+    ];
+
+    let provider, signer, contract, account;
+
+    const connectButton = document.getElementById('connectButton');
+    const sayHelloButton = document.getElementById('sayHelloButton');
+    const setMessageButton = document.getElementById('setMessageButton');
+    const accountDisplay = document.getElementById('account');
+    const currentMessageDisplay = document.getElementById('currentMessage');
+    const clickCountDisplay = document.getElementById('clickCount');
+    const newMessageInput = document.getElementById('newMessage');
+    const helloHistory = document.getElementById('helloHistory');
+    const audioButton = document.getElementById('audioButton');
+    const backgroundAudio = document.getElementById('backgroundAudio');
+
+    async function connectWallet() {
+      console.log('Connect Wallet clicked');
+      if (!window.ethereum) {
+        alert('Please install MetaMask!');
+        console.log('MetaMask not detected');
+        return;
+      }
+
+      try {
+        console.log('MetaMask detected, requesting accounts...');
+        provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        console.log('Accounts requested:', accounts);
+
+        const { chainId } = await provider.getNetwork();
+        if (chainId !== 10218) {
+          console.log('Switching to Tea Sepolia...');
+          try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: teaSepoliaConfig.chainId }],
+            });
+          } catch (switchError) {
+            if (switchError.code === 4902) {
+              console.log('Adding Tea Sepolia...');
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [teaSepoliaConfig],
+              });
+            } else {
+              throw switchError;
+            }
+          }
+        }
+
+        signer = provider.getSigner();
+        account = await signer.getAddress();
+        contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        accountDisplay.textContent = `${account.slice(0, 6)}...${account.slice(-4)}`;
+        connectButton.textContent = 'Connected';
+        connectButton.disabled = true;
+        sayHelloButton.disabled = false;
+        setMessageButton.disabled = false;
+        console.log('Connected to Tea Sepolia with account:', account);
+
+        updateContractData();
+        loadHelloHistory();
+      } catch (error) {
+        console.error('Connection error:', error.message);
+        alert('Failed to connect: ' + error.message);
+      }
+    }
+
+    async function updateContractData() {
+      try {
+        const message = await contract.message();
+        const count = await contract.clickCount();
+        currentMessageDisplay.textContent = message;
+        clickCountDisplay.textContent = count.toString();
+      } catch (error) {
+        console.error(`Error fetching data: ${error.message}`);
+      }
+    }
+
+    async function loadHelloHistory() {
+      helloHistory.innerHTML = '';
+      const filter = contract.filters.HelloSaid(account);
+      const events = await contract.queryFilter(filter);
+      events.forEach(event => {
+        const li = document.createElement('li');
+        li.textContent = `Said "${event.args.message}" at count ${event.args.count.toString()}`;
+        helloHistory.appendChild(li);
+      });
+    }
+
+    async function handleSayHello() {
+      try {
+        console.log('Sending sayHello transaction...');
+        const tx = await contract.sayHello();
+        await tx.wait();
+        console.log('Hello said!');
+        updateContractData();
+        loadHelloHistory();
+      } catch (error) {
+        console.error(`Error: ${error.message}`);
+      }
+    }
+
+    async function handleSetMessage() {
+      const newMessage = newMessageInput.value;
+      if (!newMessage) {
+        console.log('Enter a message!');
+        return;
+      }
+      try {
+        console.log('Sending setMessage transaction...');
+        const tx = await contract.setMessage(newMessage);
+        await tx.wait();
+        console.log('Message updated!');
+        newMessageInput.value = '';
+        updateContractData();
+        loadHelloHistory();
+      } catch (error) {
+        console.error(`Error: ${error.message}`);
+      }
+    }
+
+    let isPlaying = false;
+    audioButton.addEventListener('click', () => {
+      if (isPlaying) {
+        backgroundAudio.pause();
+        audioButton.textContent = 'Play Music';
+        isPlaying = false;
+      } else {
+        backgroundAudio.play();
+        audioButton.textContent = 'Mute Music';
+        isPlaying = true;
+      }
+    });
+
+    connectButton.addEventListener('click', connectWallet);
+    sayHelloButton.addEventListener('click', handleSayHello);
+    setMessageButton.addEventListener('click', handleSetMessage);
+  </script>
+</body>
+</html>
