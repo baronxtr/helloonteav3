@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hello On Tea DApp</title>
-  <!-- CSS akan dimasukkan langsung di tab CSS CodePen, jadi hapus link eksternal -->
+  <title>Hello On Tea</title>
   <style>
     body {
       margin: 0;
@@ -97,6 +96,12 @@
       padding: 5px;
       border-bottom: 1px solid #008080;
     }
+
+    .contract-address {
+      font-size: 0.9em;
+      color: #e6f3f3;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +115,8 @@
     <div class="contract-section">
       <p>Message: <span id="currentMessage">Loading...</span></p>
       <p>Total Clicks: <span id="clickCount">Loading...</span></p>
+      <p>Total Interactions (All Wallets): <span id="totalInteractions">Loading...</span></p>
+      <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
       <button id="sayHelloButton" disabled>Say Hello</button>
       
       <div class="message-input">
@@ -128,9 +135,7 @@
       <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
     </div>
   </div>
-  <!-- Memuat Ethers.js langsung di HTML -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-  <!-- JS akan dimasukkan langsung di tab JS CodePen, jadi hapus script eksternal -->
   <script>
     console.log('Ethers.js loaded:', typeof ethers);
 
@@ -164,6 +169,7 @@
     const accountDisplay = document.getElementById('account');
     const currentMessageDisplay = document.getElementById('currentMessage');
     const clickCountDisplay = document.getElementById('clickCount');
+    const totalInteractionsDisplay = document.getElementById('totalInteractions');
     const newMessageInput = document.getElementById('newMessage');
     const helloHistory = document.getElementById('helloHistory');
     const audioButton = document.getElementById('audioButton');
@@ -229,6 +235,11 @@
         const count = await contract.clickCount();
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
+
+        // Menghitung total interaksi dari semua wallet
+        const filter = contract.filters.HelloSaid(null); // Tanpa filter address
+        const events = await contract.queryFilter(filter);
+        totalInteractionsDisplay.textContent = events.length.toString();
       } catch (error) {
         console.error(`Error fetching data: ${error.message}`);
       }
