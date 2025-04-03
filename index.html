@@ -14,6 +14,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      position: relative; /* Ditambahkan untuk mendukung posisi absolut pada footer */
     }
 
     .container {
@@ -102,6 +103,15 @@
       color: #e6f3f3;
       margin-top: 10px;
     }
+
+    .footer-text {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      color: #000080; /* Warna navy */
+      font-size: 0.9em;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
@@ -135,6 +145,8 @@
       <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
     </div>
   </div>
+  <!-- Menambahkan teks footer -->
+  <div class="footer-text">© 2025 fuero.eth</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <script>
     console.log('Ethers.js loaded:', typeof ethers);
