@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello On Tea</title>
+  <!-- Menambahkan favicon -->
+  <link rel="icon" type="image/png" href="https://guild.xyz/_next/image?url=https%3A%2F%2Fguild-xyz.mypinata.cloud%2Fipfs%2FQmUMFVmXkxsF57o1LnNbvM7KzQJjCYTXJ76V4bdR1Qk1F1&w=256&q=75">
   <style>
     body {
       margin: 0;
@@ -14,7 +16,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      position: relative; /* Ditambahkan untuk mendukung posisi absolut pada footer */
+      position: relative;
     }
 
     .container {
@@ -26,6 +28,12 @@
       max-width: 600px;
       width: 100%;
       color: #fff;
+    }
+
+    .logo-inside {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
     }
 
     h1 {
@@ -108,7 +116,7 @@
       position: absolute;
       bottom: 10px;
       right: 10px;
-      color: #000080; /* Warna navy */
+      color: #000080;
       font-size: 0.9em;
       z-index: 10;
     }
@@ -116,6 +124,8 @@
 </head>
 <body>
   <div class="container">
+    <!-- Menambahkan gambar di atas "Hello on Tea" -->
+    <img src="https://guild.xyz/_next/image?url=https%3A%2F%2Fguild-xyz.mypinata.cloud%2Fipfs%2FQmUMFVmXkxsF57o1LnNbvM7KzQJjCYTXJ76V4bdR1Qk1F1&w=256&q=75" alt="Logo Inside" class="logo-inside">
     <h1>Hello on Tea</h1>
     <div class="wallet-section">
       <button id="connectButton">Connect Wallet</button>
@@ -145,7 +155,6 @@
       <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
     </div>
   </div>
-  <!-- Menambahkan teks footer -->
   <div class="footer-text">© 2025 fuero.eth</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <script>
@@ -248,8 +257,7 @@
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
 
-        // Menghitung total interaksi dari semua wallet
-        const filter = contract.filters.HelloSaid(null); // Tanpa filter address
+        const filter = contract.filters.HelloSaid(null);
         const events = await contract.queryFilter(filter);
         totalInteractionsDisplay.textContent = events.length.toString();
       } catch (error) {
