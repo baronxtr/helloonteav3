@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello On Tea</title>
-  <!-- Menambahkan favicon -->
   <link rel="icon" type="image/png" href="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4">
   <style>
     body {
@@ -124,7 +123,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Menambahkan gambar di atas "Hello on Tea" -->
     <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside">
     <h1>Hello on Tea</h1>
     <div class="wallet-section">
@@ -135,7 +133,7 @@
     <div class="contract-section">
       <p>Message: <span id="currentMessage">Loading...</span></p>
       <p>Total Clicks: <span id="clickCount">Loading...</span></p>
-      <p>Total Interactions (All Wallets): <span id="totalInteractions">Loading...</span></p>
+      <p>Total Wallets Interacted: <span id="totalWallets">Loading...</span></p>
       <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
       <button id="sayHelloButton" disabled>Say Hello</button>
       
@@ -190,7 +188,7 @@
     const accountDisplay = document.getElementById('account');
     const currentMessageDisplay = document.getElementById('currentMessage');
     const clickCountDisplay = document.getElementById('clickCount');
-    const totalInteractionsDisplay = document.getElementById('totalInteractions');
+    const totalWalletsDisplay = document.getElementById('totalWallets');
     const newMessageInput = document.getElementById('newMessage');
     const helloHistory = document.getElementById('helloHistory');
     const audioButton = document.getElementById('audioButton');
@@ -257,9 +255,11 @@
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
 
+        // Menghitung jumlah wallet unik yang telah berinteraksi
         const filter = contract.filters.HelloSaid(null);
         const events = await contract.queryFilter(filter);
-        totalInteractionsDisplay.textContent = events.length.toString();
+        const uniqueWallets = new Set(events.map(event => event.args.user));
+        totalWalletsDisplay.textContent = uniqueWallets.size.toString();
       } catch (error) {
         console.error(`Error fetching data: ${error.message}`);
       }
