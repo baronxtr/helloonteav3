@@ -163,6 +163,52 @@
       margin-top: 5px;
       display: none;
     }
+
+    .audio-section {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .leaderboard-section {
+      margin-top: 20px;
+      text-align: left;
+      display: none;
+    }
+
+    .leaderboard-section h3 {
+      color: #000080;
+      text-align: center;
+    }
+
+    .leaderboard-section ul {
+      list-style: none;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .leaderboard-section li {
+      padding: 8px;
+      border-bottom: 1px solid #008080;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .leaderboard-section li.user-wallet {
+      color: #000080; /* Warna navy untuk baris wallet pengguna */
+      font-weight: bold;
+    }
+
+    .user-position {
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -202,7 +248,14 @@
     
     <div class="audio-section">
       <button id="audioButton">Play Music</button>
+      <button id="leaderboardButton">Leaderboard</button>
       <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
+    </div>
+
+    <div class="leaderboard-section" id="leaderboardSection">
+      <h3>Top 10 Wallets by Interactions</h3>
+      <ul id="leaderboardList"></ul>
+      <div id="userPosition" class="user-position"></div>
     </div>
   </div>
   <div class="footer-text">© 2025 fuero.eth</div>
@@ -248,37 +301,29 @@
     const helloHistory = document.getElementById('helloHistory');
     const audioButton = document.getElementById('audioButton');
     const backgroundAudio = document.getElementById('backgroundAudio');
+    const leaderboardButton = document.getElementById('leaderboardButton');
+    const leaderboardSection = document.getElementById('leaderboardSection');
+    const leaderboardList = document.getElementById('leaderboardList');
+    const userPosition = document.getElementById('userPosition');
 
-    // Daftar kata-kata tidak pantas (contoh sederhana, bisa diperluas)
     const inappropriateWords = [
-      // Bahasa Inggris
       "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
-      // Bahasa Indonesia
       "anjing", "babi", "kontol", "memek", "bangsat", "sialan", "porno", "telanjang",
-      // Bahasa lain (contoh: Spanyol, Prancis)
       "puta", "merde", "cul", "concha", "joder", "cabrón",
-      // Tambahkan lebih banyak kata sesuai kebutuhan
     ];
 
-    // Regex untuk mendeteksi URL
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.[a-zA-Z]{2,}[^\s]*)/i;
 
-    // Fungsi untuk memeriksa pesan
     function validateMessage(message) {
       const lowerCaseMessage = message.toLowerCase();
-
-      // Cek kata-kata tidak pantas
       for (const word of inappropriateWords) {
         if (lowerCaseMessage.includes(word)) {
           return { isValid: false, error: "Message contains inappropriate words. Please revise." };
         }
       }
-
-      // Cek URL
       if (urlRegex.test(message)) {
         return { isValid: false, error: "Links are not allowed to prevent spam or phishing." };
       }
-
       return { isValid: true };
     }
 
@@ -291,14 +336,10 @@
       }
 
       try {
-        console.log('MetaMask detected, requesting accounts...');
         provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        console.log('Accounts requested:', accounts);
-
         const { chainId } = await provider.getNetwork();
         if (chainId !== 10218) {
-          console.log('Switching to Tea Sepolia...');
           try {
             await window.ethereum.request({
               method: 'wallet_switchEthereumChain',
@@ -306,7 +347,6 @@
             });
           } catch (switchError) {
             if (switchError.code === 4902) {
-              console.log('Adding Tea Sepolia...');
               await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [teaSepoliaConfig],
@@ -347,6 +387,8 @@
         const events = await contract.queryFilter(filter);
         const uniqueWallets = new Set(events.map(event => event.args.user));
         totalWalletsDisplay.textContent = uniqueWallets.size.toString();
+
+        updateLeaderboard(events);
       } catch (error) {
         console.error(`Error fetching data: ${error.message}`);
       }
@@ -384,7 +426,6 @@
         return;
       }
 
-      // Validasi pesan
       const validation = validateMessage(newMessage);
       if (!validation.isValid) {
         errorMessageDisplay.textContent = validation.error;
@@ -392,7 +433,6 @@
         return;
       }
 
-      // Jika valid, lanjutkan ke transaksi
       try {
         errorMessageDisplay.style.display = "none";
         console.log('Sending setMessage transaction...');
@@ -404,7 +444,7 @@
         loadHelloHistory();
       } catch (error) {
         console.error(`Error: ${error.message}`);
-        errorMessageDisplay.textContent = "Failed to update message. Please try again.";
+        WerrorMessageDisplay.textContent = "Failed to update message. Please try again.";
         errorMessageDisplay.style.display = "block";
       }
     }
@@ -421,6 +461,49 @@
       window.open(farcasterUrl, '_blank');
     }
 
+    async function updateLeaderboard(events) {
+      const walletInteractions = {};
+      events.forEach(event => {
+        const wallet = event.args.user;
+        walletInteractions[wallet] = (walletInteractions[wallet] || 0) + 1;
+      });
+
+      const sortedWallets = Object.entries(walletInteractions)
+        .sort((a, b) => b[1] - a[1])
+        .map(([wallet, count], index) => ({ wallet, count, rank: index + 1 }));
+
+      leaderboardList.innerHTML = '';
+      const top10 = sortedWallets.slice(0, 10);
+      top10.forEach(({ wallet, count, rank }) => {
+        const li = document.createElement('li');
+        const shortWallet = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+        li.textContent = `${rank}. ${shortWallet} ${count} messages`;
+
+        // Jika wallet ini adalah wallet pengguna yang sedang login, tambahkan kelas user-wallet
+        if (account && wallet.toLowerCase() === account.toLowerCase()) {
+          li.classList.add('user-wallet');
+        }
+
+        leaderboardList.appendChild(li);
+      });
+
+      if (account) {
+        const userData = sortedWallets.find(data => data.wallet.toLowerCase() === account.toLowerCase());
+        if (userData) {
+          const { rank, count } = userData;
+          if (rank > 10) {
+            userPosition.textContent = `Your Position: ${rank}. ${account.slice(0, 6)}...${account.slice(-4)} ${count} messages`;
+          } else {
+            userPosition.textContent = `Your Position: In Top 10!`;
+          }
+        } else {
+          userPosition.textContent = `Your Position: Not ranked yet. Say Hello to join!`;
+        }
+      } else {
+        userPosition.textContent = `Connect your wallet to see your position!`;
+      }
+    }
+
     let isPlaying = false;
     audioButton.addEventListener('click', () => {
       if (isPlaying) {
@@ -431,6 +514,16 @@
         backgroundAudio.play();
         audioButton.textContent = 'Mute Music';
         isPlaying = true;
+      }
+    });
+
+    let isLeaderboardVisible = false;
+    leaderboardButton.addEventListener('click', () => {
+      isLeaderboardVisible = !isLeaderboardVisible;
+      leaderboardSection.style.display = isLeaderboardVisible ? 'block' : 'none';
+      leaderboardButton.textContent = isLeaderboardVisible ? 'Hide Leaderboard' : 'Leaderboard';
+      if (isLeaderboardVisible) {
+        updateContractData();
       }
     });
 
