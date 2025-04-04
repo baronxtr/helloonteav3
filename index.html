@@ -30,7 +30,7 @@
     }
 
     .content-box {
-      border: 2px solid #000080; /* Garis kotak berwarna navy */
+      border: 2px solid #000080;
       border-radius: 10px;
       padding: 20px;
     }
@@ -156,11 +156,17 @@
     .farcaster-share-button:hover {
       background-color: #7a52b3;
     }
+
+    .error-message {
+      color: #ff4d4d;
+      font-size: 0.9em;
+      margin-top: 5px;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Membungkus elemen dari logo hingga tombol share dengan content-box -->
     <div class="content-box">
       <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside">
       <h1>Hello on Tea</h1>
@@ -179,6 +185,7 @@
         <div class="message-input">
           <input type="text" id="newMessage" placeholder="Set a new message">
           <button id="setMessageButton" disabled>Update Message</button>
+          <p id="errorMessage" class="error-message"></p>
         </div>
         
         <div class="share-buttons">
@@ -237,9 +244,43 @@
     const clickCountDisplay = document.getElementById('clickCount');
     const totalWalletsDisplay = document.getElementById('totalWallets');
     const newMessageInput = document.getElementById('newMessage');
+    const errorMessageDisplay = document.getElementById('errorMessage');
     const helloHistory = document.getElementById('helloHistory');
     const audioButton = document.getElementById('audioButton');
     const backgroundAudio = document.getElementById('backgroundAudio');
+
+    // Daftar kata-kata tidak pantas (contoh sederhana, bisa diperluas)
+    const inappropriateWords = [
+      // Bahasa Inggris
+      "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
+      // Bahasa Indonesia
+      "anjing", "babi", "kontol", "memek", "bangsat", "sialan", "porno", "telanjang",
+      // Bahasa lain (contoh: Spanyol, Prancis)
+      "puta", "merde", "cul", "concha", "joder", "cabrón",
+      // Tambahkan lebih banyak kata sesuai kebutuhan
+    ];
+
+    // Regex untuk mendeteksi URL
+    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.[a-zA-Z]{2,}[^\s]*)/i;
+
+    // Fungsi untuk memeriksa pesan
+    function validateMessage(message) {
+      const lowerCaseMessage = message.toLowerCase();
+
+      // Cek kata-kata tidak pantas
+      for (const word of inappropriateWords) {
+        if (lowerCaseMessage.includes(word)) {
+          return { isValid: false, error: "Message contains inappropriate words. Please revise." };
+        }
+      }
+
+      // Cek URL
+      if (urlRegex.test(message)) {
+        return { isValid: false, error: "Links are not allowed to prevent spam or phishing." };
+      }
+
+      return { isValid: true };
+    }
 
     async function connectWallet() {
       console.log('Connect Wallet clicked');
@@ -336,12 +377,24 @@
     }
 
     async function handleSetMessage() {
-      const newMessage = newMessageInput.value;
+      const newMessage = newMessageInput.value.trim();
       if (!newMessage) {
-        console.log('Enter a message!');
+        errorMessageDisplay.textContent = "Please enter a message.";
+        errorMessageDisplay.style.display = "block";
         return;
       }
+
+      // Validasi pesan
+      const validation = validateMessage(newMessage);
+      if (!validation.isValid) {
+        errorMessageDisplay.textContent = validation.error;
+        errorMessageDisplay.style.display = "block";
+        return;
+      }
+
+      // Jika valid, lanjutkan ke transaksi
       try {
+        errorMessageDisplay.style.display = "none";
         console.log('Sending setMessage transaction...');
         const tx = await contract.setMessage(newMessage);
         await tx.wait();
@@ -351,17 +404,19 @@
         loadHelloHistory();
       } catch (error) {
         console.error(`Error: ${error.message}`);
+        errorMessageDisplay.textContent = "Failed to update message. Please try again.";
+        errorMessageDisplay.style.display = "block";
       }
     }
 
     function shareOnTwitter() {
-      const tweetText = "Say 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with @teaprotocol community. Try it now: https://helloontea.vercel.app #TeaProtocol #Web3";
+      const tweetText = "Say hello to 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with the Tea Protocol community. Try it now: https://your-dapp-url.com #TeaProtocol #Web3";
       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
       window.open(tweetUrl, '_blank');
     }
 
     function shareOnFarcaster() {
-      const postText = "Say 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with @teaprotocol community. Try it now: https://helloontea.vercel.app #TeaProtocol #Web3";
+      const postText = "Say hello to 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with the Tea Protocol community. Try it now: https://your-dapp-url.com #TeaProtocol #Web3";
       const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postText)}`;
       window.open(farcasterUrl, '_blank');
     }
