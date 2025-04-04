@@ -29,10 +29,16 @@
       color: #fff;
     }
 
+    .content-box {
+      border: 2px solid #000080; /* Garis kotak berwarna navy */
+      border-radius: 10px;
+      padding: 20px;
+    }
+
     .logo-inside {
       width: 100px;
       height: 100px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     h1 {
@@ -119,33 +125,72 @@
       font-size: 0.9em;
       z-index: 10;
     }
+
+    .share-buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .share-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .twitter-share-button {
+      background-color: #1DA1F2;
+    }
+
+    .twitter-share-button:hover {
+      background-color: #0d95e8;
+    }
+
+    .farcaster-share-button {
+      background-color: #8A63D2;
+    }
+
+    .farcaster-share-button:hover {
+      background-color: #7a52b3;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside">
-    <h1>Hello on Tea</h1>
-    <div class="wallet-section">
-      <button id="connectButton">Connect Wallet</button>
-      <p>Wallet: <span id="account">Not connected</span></p>
+    <!-- Membungkus elemen dari logo hingga tombol share dengan content-box -->
+    <div class="content-box">
+      <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside">
+      <h1>Hello on Tea</h1>
+      <div class="wallet-section">
+        <button id="connectButton">Connect Wallet</button>
+        <p>Wallet: <span id="account">Not connected</span></p>
+      </div>
+      
+      <div class="contract-section">
+        <p>Message: <span id="currentMessage">Loading...</span></p>
+        <p>Total Clicks: <span id="clickCount">Loading...</span></p>
+        <p>Total Wallets Interacted: <span id="totalWallets">Loading...</span></p>
+        <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
+        <button id="sayHelloButton" disabled>Say Hello</button>
+        
+        <div class="message-input">
+          <input type="text" id="newMessage" placeholder="Set a new message">
+          <button id="setMessageButton" disabled>Update Message</button>
+        </div>
+        
+        <div class="share-buttons">
+          <button id="twitterShareButton" class="twitter-share-button">Share on Twitter</button>
+          <button id="farcasterShareButton" class="farcaster-share-button">Share on Farcaster</button>
+        </div>
+      </div>
     </div>
     
-    <div class="contract-section">
-      <p>Message: <span id="currentMessage">Loading...</span></p>
-      <p>Total Clicks: <span id="clickCount">Loading...</span></p>
-      <p>Total Wallets Interacted: <span id="totalWallets">Loading...</span></p>
-      <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
-      <button id="sayHelloButton" disabled>Say Hello</button>
-      
-      <div class="message-input">
-        <input type="text" id="newMessage" placeholder="Set a new message">
-        <button id="setMessageButton" disabled>Update Message</button>
-      </div>
-      
-      <div class="history-section">
-        <h3>Say Hello History</h3>
-        <ul id="helloHistory"></ul>
-      </div>
+    <div class="history-section">
+      <h3>Say Hello History</h3>
+      <ul id="helloHistory"></ul>
     </div>
     
     <div class="audio-section">
@@ -185,6 +230,8 @@
     const connectButton = document.getElementById('connectButton');
     const sayHelloButton = document.getElementById('sayHelloButton');
     const setMessageButton = document.getElementById('setMessageButton');
+    const twitterShareButton = document.getElementById('twitterShareButton');
+    const farcasterShareButton = document.getElementById('farcasterShareButton');
     const accountDisplay = document.getElementById('account');
     const currentMessageDisplay = document.getElementById('currentMessage');
     const clickCountDisplay = document.getElementById('clickCount');
@@ -255,7 +302,6 @@
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
 
-        // Menghitung jumlah wallet unik yang telah berinteraksi
         const filter = contract.filters.HelloSaid(null);
         const events = await contract.queryFilter(filter);
         const uniqueWallets = new Set(events.map(event => event.args.user));
@@ -308,6 +354,18 @@
       }
     }
 
+    function shareOnTwitter() {
+      const tweetText = "Say 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with @teaprotocol community. Try it now: https://helloontea.vercel.app #TeaProtocol #Web3";
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+      window.open(tweetUrl, '_blank');
+    }
+
+    function shareOnFarcaster() {
+      const postText = "Say 'Hello on Tea' on Tea Sepolia! 🍵 A fun DApp to connect, message, and vibe with @teaprotocol community. Try it now: https://helloontea.vercel.app #TeaProtocol #Web3";
+      const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postText)}`;
+      window.open(farcasterUrl, '_blank');
+    }
+
     let isPlaying = false;
     audioButton.addEventListener('click', () => {
       if (isPlaying) {
@@ -324,6 +382,8 @@
     connectButton.addEventListener('click', connectWallet);
     sayHelloButton.addEventListener('click', handleSayHello);
     setMessageButton.addEventListener('click', handleSetMessage);
+    twitterShareButton.addEventListener('click', shareOnTwitter);
+    farcasterShareButton.addEventListener('click', shareOnFarcaster);
   </script>
 </body>
 </html>
