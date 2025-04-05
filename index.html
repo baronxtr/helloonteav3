@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <title>Hello On Tea</title>
   <link rel="icon" type="image/png" href="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Arial', sans-serif; /* Font default sans-serif untuk seluruh halaman */
+      font-size: 14px; /* Ukuran font default disesuaikan untuk sans-serif */
       background: url(https://media.stockimg.ai/image/v2/It7y_e6p9B3Y.png) no-repeat center center fixed;
       background-size: cover;
       display: flex;
@@ -39,12 +41,19 @@
       width: 100px;
       height: 100px;
       margin-bottom: 10px;
+      border: 3px solid #90EE90;
+      border-radius: 50%;
+      padding: 5px;
+      background: transparent;
     }
 
     h1 {
-      color: #000080;
-      font-size: 2.5em;
+      font-family: 'Press Start 2P', cursive; /* Judul tetap menggunakan Press Start 2P */
+      color: #90EE90;
+      font-size: 1.5em;
       margin-bottom: 20px;
+      text-decoration: underline;
+      text-decoration-color: #90EE90;
     }
 
     .wallet-section, .contract-section, .audio-section {
@@ -52,13 +61,15 @@
     }
 
     button {
+      font-family: 'Arial', sans-serif; /* Tombol menggunakan sans-serif */
       background-color: #000080;
       color: #fff;
-      padding: 10px 20px;
+      padding: 10px 20px; /* Kembalikan padding ke ukuran normal */
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
+      font-size: 14px; /* Sesuaikan ukuran font untuk sans-serif */
     }
 
     button:hover:not(:disabled) {
@@ -71,15 +82,18 @@
     }
 
     input {
+      font-family: 'Arial', sans-serif; /* Input menggunakan sans-serif */
       padding: 8px;
       border-radius: 5px;
       border: 1px solid #008080;
       margin-right: 10px;
       width: 200px;
+      font-size: 14px; /* Sesuaikan ukuran font untuk sans-serif */
     }
 
     p {
-      font-size: 1.1em;
+      font-family: 'Arial', sans-serif; /* Paragraf menggunakan sans-serif */
+      font-size: 1em; /* Sesuaikan ukuran font untuk sans-serif */
       margin: 10px 0;
     }
 
@@ -94,7 +108,9 @@
     }
 
     .history-section h3 {
+      font-family: 'Arial', sans-serif; /* h3 menggunakan sans-serif */
       color: #000080;
+      font-size: 1.2em; /* Sesuaikan ukuran font untuk sans-serif */
     }
 
     .history-section ul {
@@ -107,22 +123,40 @@
     }
 
     .history-section li {
+      font-family: 'Arial', sans-serif; /* List item menggunakan sans-serif */
       padding: 5px;
       border-bottom: 1px solid #008080;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      white-space: nowrap;
+      font-size: 0.9em; /* Sesuaikan ukuran font untuk sans-serif */
+    }
+
+    .history-section li a {
+      color: #000080;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    .history-section li a:hover {
+      text-decoration: underline;
     }
 
     .contract-address {
+      font-family: 'Arial', sans-serif; /* Contract address menggunakan sans-serif */
       font-size: 0.9em;
       color: #e6f3f3;
       margin-top: 10px;
     }
 
     .footer-text {
+      font-family: 'Arial', sans-serif; /* Footer menggunakan sans-serif */
       position: absolute;
       bottom: 10px;
       right: 10px;
       color: #000080;
-      font-size: 0.9em;
+      font-size: 0.8em;
       z-index: 10;
     }
 
@@ -158,6 +192,7 @@
     }
 
     .error-message {
+      font-family: 'Arial', sans-serif; /* Error message menggunakan sans-serif */
       color: #ff4d4d;
       font-size: 0.9em;
       margin-top: 5px;
@@ -177,8 +212,10 @@
     }
 
     .leaderboard-section h3 {
+      font-family: 'Arial', sans-serif; /* h3 di leaderboard menggunakan sans-serif */
       color: #000080;
       text-align: center;
+      font-size: 1.2em;
     }
 
     .leaderboard-section ul {
@@ -191,23 +228,27 @@
     }
 
     .leaderboard-section li {
+      font-family: 'Arial', sans-serif; /* List item di leaderboard menggunakan sans-serif */
       padding: 8px;
       border-bottom: 1px solid #008080;
       display: flex;
       justify-content: space-between;
+      font-size: 0.9em;
     }
 
     .leaderboard-section li.user-wallet {
-      color: #000080; /* Warna navy untuk baris wallet pengguna */
+      color: #000080;
       font-weight: bold;
     }
 
     .user-position {
+      font-family: 'Arial', sans-serif; /* User position menggunakan sans-serif */
       margin-top: 10px;
       padding: 8px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
       text-align: center;
+      font-size: 0.9em;
     }
   </style>
 </head>
@@ -229,7 +270,7 @@
         <button id="sayHelloButton" disabled>Say Hello</button>
         
         <div class="message-input">
-          <input type="text" id="newMessage" placeholder="Set a new message">
+          <input type="text" id="newMessage" placeholder="Set a new message" maxlength="15">
           <button id="setMessageButton" disabled>Update Message</button>
           <p id="errorMessage" class="error-message"></p>
         </div>
@@ -400,7 +441,23 @@
       const events = await contract.queryFilter(filter);
       events.forEach(event => {
         const li = document.createElement('li');
-        li.textContent = `Said "${event.args.message}" at count ${event.args.count.toString()}`;
+        const messageText = `Said "${event.args.message}" at count ${event.args.count.toString()}`;
+        
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = messageText;
+        
+        const explorerLink = document.createElement('a');
+        const txHash = event.transactionHash;
+        const shortTxHash = `${txHash.slice(0, 6)}...${txHash.slice(-4)}`;
+        const explorerUrl = `https://sepolia.tea.xyz/tx/${txHash}`;
+        explorerLink.href = explorerUrl;
+        explorerLink.textContent = shortTxHash;
+        explorerLink.target = '_blank';
+        explorerLink.rel = 'noopener noreferrer';
+        
+        li.appendChild(messageSpan);
+        li.appendChild(explorerLink);
+        
         helloHistory.appendChild(li);
       });
     }
@@ -426,6 +483,12 @@
         return;
       }
 
+      if (newMessage.length > 15) {
+        errorMessageDisplay.textContent = "Message must be 15 characters or less.";
+        errorMessageDisplay.style.display = "block";
+        return;
+      }
+
       const validation = validateMessage(newMessage);
       if (!validation.isValid) {
         errorMessageDisplay.textContent = validation.error;
@@ -444,7 +507,7 @@
         loadHelloHistory();
       } catch (error) {
         console.error(`Error: ${error.message}`);
-        WerrorMessageDisplay.textContent = "Failed to update message. Please try again.";
+        errorMessageDisplay.textContent = "Failed to update message. Please try again.";
         errorMessageDisplay.style.display = "block";
       }
     }
@@ -479,7 +542,6 @@
         const shortWallet = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
         li.textContent = `${rank}. ${shortWallet} ${count} messages`;
 
-        // Jika wallet ini adalah wallet pengguna yang sedang login, tambahkan kelas user-wallet
         if (account && wallet.toLowerCase() === account.toLowerCase()) {
           li.classList.add('user-wallet');
         }
