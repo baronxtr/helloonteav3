@@ -28,14 +28,14 @@
       max-width: 600px;
       width: 100%;
       color: #fff;
-      position: relative; /* Ditambahkan untuk positioning footer */
+      position: relative;
     }
     .content-box {
       border: 2px solid #000080;
       border-radius: 10px;
       padding: 20px;
-      position: relative; /* Ditambahkan untuk positioning footer */
-      padding-bottom: 40px; /* Memberi ruang untuk footer */
+      position: relative;
+      padding-bottom: 40px;
     }
     .logo-inside {
       width: 100px;
@@ -141,17 +141,17 @@
       left: 0;
       right: 0;
       text-align: center;
-      color: #98FB98; /* Hijau muda */
+      color: #98FB98;
       font-size: 0.8em;
       z-index: 10;
     }
     .footer-text a {
-      color: #98FB98; /* Hijau muda */
+      color: #98FB98;
       text-decoration: none;
       font-weight: bold;
     }
     .footer-text a:hover {
-      color: #000080; /* Navy */
+      color: #000080;
       text-decoration: underline;
     }
     .share-buttons {
@@ -230,6 +230,7 @@
       border-radius: 5px;
       text-align: center;
       font-size: 0.9em;
+      color: #000080; /* Warna navy untuk posisi pengguna */
     }
   </style>
 </head>
@@ -268,7 +269,7 @@
         <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
       </div>
       <div class="leaderboard-section" id="leaderboardSection">
-        <h3>Top 10 Wallets by Interactions</h3>
+        <h3>Top 50 Wallets by Interactions</h3>
         <ul id="leaderboardList"></ul>
         <div id="userPosition" class="user-position"></div>
       </div>
@@ -328,6 +329,12 @@
     ];
 
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.[a-zA-Z]{2,}[^\s]*)/i;
+
+    function getOrdinal(n) {
+      const s = ["th", "st", "nd", "rd"];
+      const v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
 
     function validateMessage(message) {
       const lowerCaseMessage = message.toLowerCase();
@@ -510,8 +517,8 @@
         .map(([wallet, count], index) => ({ wallet, count, rank: index + 1 }));
 
       leaderboardList.innerHTML = '';
-      const top10 = sortedWallets.slice(0, 10);
-      top10.forEach(({ wallet, count, rank }) => {
+      const top50 = sortedWallets.slice(0, 50);
+      top50.forEach(({ wallet, count, rank }) => {
         const li = document.createElement('li');
         const shortWallet = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
         li.textContent = `${rank}. ${shortWallet} ${count} messages`;
@@ -526,12 +533,8 @@
       if (account) {
         const userData = sortedWallets.find(data => data.wallet.toLowerCase() === account.toLowerCase());
         if (userData) {
-          const { rank, count } = userData;
-          if (rank > 10) {
-            userPosition.textContent = `Your Position: ${rank}. ${account.slice(0, 6)}...${account.slice(-4)} ${count} messages`;
-          } else {
-            userPosition.textContent = `Your Position: In Top 10!`;
-          }
+          const { rank } = userData;
+          userPosition.textContent = `Your Position: ${getOrdinal(rank)}`;
         } else {
           userPosition.textContent = `Your Position: Not ranked yet. Say Hello to join!`;
         }
