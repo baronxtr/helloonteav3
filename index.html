@@ -9,8 +9,8 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Arial', sans-serif; /* Font default sans-serif untuk seluruh halaman */
-      font-size: 14px; /* Ukuran font default disesuaikan untuk sans-serif */
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
       background: url(https://media.stockimg.ai/image/v2/It7y_e6p9B3Y.png) no-repeat center center fixed;
       background-size: cover;
       display: flex;
@@ -19,7 +19,6 @@
       min-height: 100vh;
       position: relative;
     }
-
     .container {
       background: rgba(0, 128, 128, 0.9);
       padding: 30px;
@@ -29,14 +28,15 @@
       max-width: 600px;
       width: 100%;
       color: #fff;
+      position: relative; /* Ditambahkan untuk positioning footer */
     }
-
     .content-box {
       border: 2px solid #000080;
       border-radius: 10px;
       padding: 20px;
+      position: relative; /* Ditambahkan untuk positioning footer */
+      padding-bottom: 40px; /* Memberi ruang untuk footer */
     }
-
     .logo-inside {
       width: 100px;
       height: 100px;
@@ -46,73 +46,62 @@
       padding: 5px;
       background: transparent;
     }
-
     h1 {
-      font-family: 'Press Start 2P', cursive; /* Judul tetap menggunakan Press Start 2P */
+      font-family: 'Press Start 2P', cursive;
       color: #90EE90;
       font-size: 1.5em;
       margin-bottom: 20px;
       text-decoration: underline;
       text-decoration-color: #90EE90;
     }
-
     .wallet-section, .contract-section, .audio-section {
       margin: 20px 0;
     }
-
     button {
-      font-family: 'Arial', sans-serif; /* Tombol menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       background-color: #000080;
       color: #fff;
-      padding: 10px 20px; /* Kembalikan padding ke ukuran normal */
+      padding: 10px 20px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
-      font-size: 14px; /* Sesuaikan ukuran font untuk sans-serif */
+      font-size: 14px;
     }
-
     button:hover:not(:disabled) {
       background-color: #003366;
     }
-
     button:disabled {
       background-color: #666;
       cursor: not-allowed;
     }
-
     input {
-      font-family: 'Arial', sans-serif; /* Input menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       padding: 8px;
       border-radius: 5px;
       border: 1px solid #008080;
       margin-right: 10px;
       width: 200px;
-      font-size: 14px; /* Sesuaikan ukuran font untuk sans-serif */
+      font-size: 14px;
     }
-
     p {
-      font-family: 'Arial', sans-serif; /* Paragraf menggunakan sans-serif */
-      font-size: 1em; /* Sesuaikan ukuran font untuk sans-serif */
+      font-family: 'Arial', sans-serif;
+      font-size: 1em;
       margin: 10px 0;
     }
-
     span {
       color: #e6f3f3;
       font-weight: bold;
     }
-
     .history-section {
       margin-top: 20px;
       text-align: left;
     }
-
     .history-section h3 {
-      font-family: 'Arial', sans-serif; /* h3 menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       color: #000080;
-      font-size: 1.2em; /* Sesuaikan ukuran font untuk sans-serif */
+      font-size: 1.2em;
     }
-
     .history-section ul {
       list-style: none;
       padding: 0;
@@ -121,52 +110,56 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
     }
-
     .history-section li {
-      font-family: 'Arial', sans-serif; /* List item menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       padding: 5px;
       border-bottom: 1px solid #008080;
       display: flex;
       justify-content: space-between;
       align-items: center;
       white-space: nowrap;
-      font-size: 0.9em; /* Sesuaikan ukuran font untuk sans-serif */
+      font-size: 0.9em;
     }
-
     .history-section li a {
       color: #000080;
       text-decoration: none;
       font-size: 0.9em;
     }
-
     .history-section li a:hover {
       text-decoration: underline;
     }
-
     .contract-address {
-      font-family: 'Arial', sans-serif; /* Contract address menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       font-size: 0.9em;
       color: #e6f3f3;
       margin-top: 10px;
     }
-
     .footer-text {
-      font-family: 'Arial', sans-serif; /* Footer menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       position: absolute;
       bottom: 10px;
-      right: 10px;
-      color: #000080;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #98FB98; /* Hijau muda */
       font-size: 0.8em;
       z-index: 10;
     }
-
+    .footer-text a {
+      color: #98FB98; /* Hijau muda */
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer-text a:hover {
+      color: #000080; /* Navy */
+      text-decoration: underline;
+    }
     .share-buttons {
       margin-top: 15px;
       display: flex;
       justify-content: center;
       gap: 10px;
     }
-
     .share-buttons button {
       padding: 10px 20px;
       border: none;
@@ -174,50 +167,41 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-
     .twitter-share-button {
       background-color: #1DA1F2;
     }
-
     .twitter-share-button:hover {
       background-color: #0d95e8;
     }
-
     .farcaster-share-button {
       background-color: #8A63D2;
     }
-
     .farcaster-share-button:hover {
       background-color: #7a52b3;
     }
-
     .error-message {
-      font-family: 'Arial', sans-serif; /* Error message menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       color: #ff4d4d;
       font-size: 0.9em;
       margin-top: 5px;
       display: none;
     }
-
     .audio-section {
       display: flex;
       gap: 10px;
       justify-content: center;
     }
-
     .leaderboard-section {
       margin-top: 20px;
       text-align: left;
       display: none;
     }
-
     .leaderboard-section h3 {
-      font-family: 'Arial', sans-serif; /* h3 di leaderboard menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       color: #000080;
       text-align: center;
       font-size: 1.2em;
     }
-
     .leaderboard-section ul {
       list-style: none;
       padding: 0;
@@ -226,23 +210,20 @@
       max-height: 300px;
       overflow-y: auto;
     }
-
     .leaderboard-section li {
-      font-family: 'Arial', sans-serif; /* List item di leaderboard menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       padding: 8px;
       border-bottom: 1px solid #008080;
       display: flex;
       justify-content: space-between;
       font-size: 0.9em;
     }
-
     .leaderboard-section li.user-wallet {
       color: #000080;
       font-weight: bold;
     }
-
     .user-position {
-      font-family: 'Arial', sans-serif; /* User position menggunakan sans-serif */
+      font-family: 'Arial', sans-serif;
       margin-top: 10px;
       padding: 8px;
       background: rgba(255, 255, 255, 0.1);
@@ -261,49 +242,42 @@
         <button id="connectButton">Connect Wallet</button>
         <p>Wallet: <span id="account">Not connected</span></p>
       </div>
-      
       <div class="contract-section">
         <p>Message: <span id="currentMessage">Loading...</span></p>
         <p>Total Clicks: <span id="clickCount">Loading...</span></p>
         <p>Total Wallets Interacted: <span id="totalWallets">Loading...</span></p>
         <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
         <button id="sayHelloButton" disabled>Say Hello</button>
-        
         <div class="message-input">
           <input type="text" id="newMessage" placeholder="Set a new message" maxlength="15">
           <button id="setMessageButton" disabled>Update Message</button>
           <p id="errorMessage" class="error-message"></p>
         </div>
-        
         <div class="share-buttons">
           <button id="twitterShareButton" class="twitter-share-button">Share on Twitter</button>
           <button id="farcasterShareButton" class="farcaster-share-button">Share on Farcaster</button>
         </div>
       </div>
-    </div>
-    
-    <div class="history-section">
-      <h3>Say Hello History</h3>
-      <ul id="helloHistory"></ul>
-    </div>
-    
-    <div class="audio-section">
-      <button id="audioButton">Play Music</button>
-      <button id="leaderboardButton">Leaderboard</button>
-      <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
-    </div>
-
-    <div class="leaderboard-section" id="leaderboardSection">
-      <h3>Top 10 Wallets by Interactions</h3>
-      <ul id="leaderboardList"></ul>
-      <div id="userPosition" class="user-position"></div>
+      <div class="history-section">
+        <h3>Say Hello History</h3>
+        <ul id="helloHistory"></ul>
+      </div>
+      <div class="audio-section">
+        <button id="audioButton">Play Music</button>
+        <button id="leaderboardButton">Leaderboard</button>
+        <audio id="backgroundAudio" loop src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeic7dc7ezpi6cdarec4rdhwla532h45di7dkbj3hrziqifgcbslsoq"></audio>
+      </div>
+      <div class="leaderboard-section" id="leaderboardSection">
+        <h3>Top 10 Wallets by Interactions</h3>
+        <ul id="leaderboardList"></ul>
+        <div id="userPosition" class="user-position"></div>
+      </div>
+      <div class="footer-text">Build by <a href="https://x.com/0xdor" target="_blank" rel="noopener noreferrer">@0xdor</a></div>
     </div>
   </div>
-  <div class="footer-text">© 2025 fuero.eth</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <script>
     console.log('Ethers.js loaded:', typeof ethers);
-
     const teaSepoliaConfig = {
       chainId: '0x27ea',
       chainName: 'Tea Sepolia',
