@@ -272,8 +272,14 @@
       font-family: 'Arial', sans-serif;
       font-size: 0.8em;
       color: #e6f3f3;
-      margin-bottom: 15px;
+      margin-bottom: 5px;
       word-wrap: break-word;
+    }
+    .popup .nft-supply-info {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8em;
+      color: #e6f3f3;
+      margin-bottom: 15px;
     }
     .popup p {
       font-size: 0.9em;
@@ -301,7 +307,8 @@
     <h2>Hello on Tea</h2>
     <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeiageou2qvzdpiqjfr5lfzxvc4usucdswqw3yqu36tjvcor7scm5yq" alt="NFT Image">
     <p class="nft-contract-address">Contract: 0xFbA581414A171B940001295B8BB61584EA43Ad86</p>
-    <p>A commemorative NFT from 'Hello on Tea' DApp, celebrating your contribution on Tea Sepolia Testnet! 🍵</p>
+    <p class="nft-supply-info" id="nftSupplyInfo">Minted: Loading... / 10,000</p>
+    <p>Mint your exclusive 'Hello on Tea' NFT—a special keepsake celebrating your contribution on Tea Sepolia Testnet! Only 0.1 TEA to mint, with a max supply of 10,000. Join the Tea Protocol community today!</p>
     <button id="confirmMintButton">Mint (0.1 TEA)</button>
   </div>
   <div class="container">
@@ -412,6 +419,7 @@
     const userPosition = document.getElementById('userPosition');
     const popupOverlay = document.getElementById('popupOverlay');
     const nftPopup = document.getElementById('nftPopup');
+    const nftSupplyInfo = document.getElementById('nftSupplyInfo');
 
     const inappropriateWords = [
       "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
@@ -536,6 +544,17 @@
       });
     }
 
+    async function updateNFTSupply() {
+      try {
+        const totalSupply = await nftContract.totalSupply();
+        const maxSupply = await nftContract.MAX_SUPPLY();
+        nftSupplyInfo.textContent = `Minted: ${totalSupply.toString()} / ${maxSupply.toString()}`;
+      } catch (error) {
+        console.error('Error fetching NFT supply:', error.message);
+        nftSupplyInfo.textContent = `Minted: Error / 10,000`;
+      }
+    }
+
     async function handleSayHello() {
       try {
         console.log('Sending sayHello transaction...');
@@ -589,6 +608,7 @@
     function showNFTPopup() {
       popupOverlay.style.display = 'block';
       nftPopup.style.display = 'block';
+      updateNFTSupply(); // Panggil fungsi untuk memperbarui data supply saat popup muncul
     }
 
     function hideNFTPopup() {
@@ -606,6 +626,7 @@
         console.log('NFT minted! Transaction hash:', receipt.transactionHash);
         alert('NFT successfully minted! Tx Hash: ' + receipt.transactionHash);
         hideNFTPopup();
+        updateNFTSupply(); // Perbarui supply setelah minting
       } catch (error) {
         console.error('Error minting NFT:', error.message);
         alert('Failed to mint NFT: ' + error.message);
