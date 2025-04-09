@@ -76,10 +76,8 @@
       cursor: not-allowed;
     }
     #mintNFTButton, #sayHelloButton {
-      width: 160px;
+      width: 150px;
       margin: 5px;
-      padding: 10px 0;
-      display: inline-block;
     }
     input {
       font-family: 'Arial', sans-serif;
@@ -254,7 +252,6 @@
       z-index: 1000;
       max-width: 400px;
       width: 90%;
-      box-sizing: border-box; /* Ditambahkan untuk memastikan padding tidak memengaruhi lebar */
     }
     .popup h2 {
       font-family: 'Press Start 2P', cursive;
@@ -296,24 +293,6 @@
     .popup button {
       width: 120px;
     }
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      color: #fff;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
-      text-align: right;
-    }
-    .close-button:hover {
-      color: #ff4d4d; /* Warna saat hover */
-    }
     .overlay {
       display: none;
       position: fixed;
@@ -347,7 +326,6 @@
 <body>
   <div class="overlay" id="popupOverlay"></div>
   <div class="popup" id="nftPopup">
-    <button class="close-button" id="closePopupButton">X</button>
     <h2>Hello on Tea</h2>
     <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeiageou2qvzdpiqjfr5lfzxvc4usucdswqw3yqu36tjvcor7scm5yq" alt="NFT Image">
     <p class="nft-contract-address">Contract: 0xFbA581414A171B940001295B8BB61584EA43Ad86</p>
@@ -381,7 +359,7 @@
         </div>
         <div class="running-text-container">
           <div class="running-text">
-            Announcement: Due to high traffic on Tea Sepolia, there may be delays in displaying data on Hello on Tea DApp.
+            Notice: Due to high traffic on Tea Sepolia, there may be delays in displaying data on the Hello on Tea DApp.
           </div>
         </div>
         <div class="share-buttons">
@@ -475,7 +453,6 @@
     const nftSupplyInfo = document.getElementById('nftSupplyInfo');
     const mintProgressPopup = document.getElementById('mintProgressPopup');
     const mintProgressMessage = document.getElementById('mintProgressMessage');
-    const closePopupButton = document.getElementById('closePopupButton');
 
     const inappropriateWords = [
       "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
@@ -547,9 +524,7 @@
         setMessageButton.disabled = false;
         console.log('Connected to Tea Sepolia with account:', account);
 
-        updateLightData();
-        updateHeavyData();
-        startHeavyDataInterval();
+        updateContractData();
         loadHelloHistory();
       } catch (error) {
         console.error('Connection error:', error.message);
@@ -557,40 +532,22 @@
       }
     }
 
-    async function updateLightData() {
+    async function updateContractData() {
       try {
         const message = await contract.message();
         const count = await contract.clickCount();
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
-      } catch (error) {
-        console.error(`Error fetching light data: ${error.message}`);
-        currentMessageDisplay.textContent = "Failed to load";
-        clickCountDisplay.textContent = "Failed to load";
-      }
-    }
 
-    async function updateHeavyData() {
-      try {
         const filter = contract.filters.HelloSaid(null);
         const events = await contract.queryFilter(filter);
         const uniqueWallets = new Set(events.map(event => event.args.user));
         totalWalletsDisplay.textContent = uniqueWallets.size.toString();
+
         updateLeaderboard(events);
       } catch (error) {
-        console.error(`Error fetching heavy data: ${error.message}`);
-        totalWalletsDisplay.textContent = "Failed to load";
-        leaderboardList.innerHTML = "<li>Unable to load leaderboard</li>";
+        console.error(`Error fetching data: ${error.message}`);
       }
-    }
-
-    function startHeavyDataInterval() {
-      setInterval(() => {
-        if (contract) {
-          console.log('Updating heavy data every 10 minutes...');
-          updateHeavyData();
-        }
-      }, 600000);
     }
 
     async function loadHelloHistory() {
@@ -637,7 +594,7 @@
         const tx = await contract.sayHello();
         await tx.wait();
         console.log('Hello said!');
-        updateLightData();
+        updateContractData();
         loadHelloHistory();
       } catch (error) {
         console.error(`Error: ${error.message}`);
@@ -672,7 +629,7 @@
         await tx.wait();
         console.log('Message updated!');
         newMessageInput.value = '';
-        updateLightData();
+        updateContractData();
         loadHelloHistory();
       } catch (error) {
         console.error(`Error: ${error.message}`);
@@ -684,11 +641,6 @@
     function showNFTPopup() {
       popupOverlay.style.display = 'block';
       nftPopup.style.display = 'block';
-      // Pastikan posisi popup di tengah
-      nftPopup.style.position = 'fixed';
-      nftPopup.style.top = '50%';
-      nftPopup.style.left = '50%';
-      nftPopup.style.transform = 'translate(-50%, -50%)';
       updateNFTSupply();
     }
 
@@ -701,11 +653,6 @@
       mintProgressMessage.innerHTML = message;
       popupOverlay.style.display = 'block';
       mintProgressPopup.style.display = 'block';
-      // Pastikan posisi popup di tengah
-      mintProgressPopup.style.position = 'fixed';
-      mintProgressPopup.style.top = '50%';
-      mintProgressPopup.style.left = '50%';
-      mintProgressPopup.style.transform = 'translate(-50%, -50%)';
     }
 
     function hideMintProgressPopup() {
@@ -725,7 +672,7 @@
         console.log('NFT minted! Transaction hash:', receipt.transactionHash);
         const txHashLink = `<a href="https://sepolia.tea.xyz/tx/${receipt.transactionHash}" target="_blank">View Transaction</a>`;
         showMintProgressPopup(`Successfully minted NFT! ${txHashLink}`);
-        setTimeout(hideMintProgressPopup, 5000);
+        setTimeout(hideMintProgressPopup, 5000); // Hide after 5 seconds
         updateNFTSupply();
         hideNFTPopup();
       } catch (error) {
@@ -737,7 +684,7 @@
         } else {
           showMintProgressPopup(`Failed to mint NFT: ${error.message}`);
         }
-        setTimeout(hideMintProgressPopup, 5000);
+        setTimeout(hideMintProgressPopup, 5000); // Hide after 5 seconds
       }
     }
 
@@ -809,8 +756,8 @@
       isLeaderboardVisible = !isLeaderboardVisible;
       leaderboardSection.style.display = isLeaderboardVisible ? 'block' : 'none';
       leaderboardButton.textContent = isLeaderboardVisible ? 'Hide Leaderboard' : 'Leaderboard';
-      if (isLeaderboardVisible && contract) {
-        updateHeavyData();
+      if (isLeaderboardVisible) {
+        updateContractData();
       }
     });
 
@@ -822,7 +769,6 @@
     setMessageButton.addEventListener('click', handleSetMessage);
     twitterShareButton.addEventListener('click', shareOnTwitter);
     farcasterShareButton.addEventListener('click', shareOnFarcaster);
-    closePopupButton.addEventListener('click', hideNFTPopup);
   </script>
 </body>
 </html>
