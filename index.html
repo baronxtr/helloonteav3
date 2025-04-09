@@ -254,7 +254,7 @@
       z-index: 1000;
       max-width: 400px;
       width: 90%;
-      box-sizing: border-box;
+      box-sizing: border-box; /* Ditambahkan untuk memastikan padding tidak memengaruhi lebar */
     }
     .popup h2 {
       font-family: 'Press Start 2P', cursive;
@@ -298,8 +298,8 @@
     }
     .close-button {
       position: absolute;
-      top: 5px; /* Dikurangi dari 10px menjadi 5px agar lebih mepet ke atas */
-      right: 5px; /* Dikurangi dari 10px menjadi 5px agar lebih mepet ke kanan */
+      top: 10px;
+      right: 10px;
       font-size: 20px;
       color: #fff;
       background: none;
@@ -312,7 +312,7 @@
       text-align: right;
     }
     .close-button:hover {
-      color: #ff4d4d;
+      color: #ff4d4d; /* Warna saat hover */
     }
     .overlay {
       display: none;
