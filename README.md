@@ -1,4 +1,3 @@
-Hello on Tea DApp
 Overview
 Hello on Tea is a fun and interactive decentralized application (DApp) built on the Tea Sepolia Testnet. It allows users to connect their wallets, send "Hello" messages, update a shared message board, and mint unique NFTs—all while engaging with the Tea Protocol community. Designed as a lightweight and user-friendly experience, this DApp showcases the capabilities of blockchain technology in a playful and social way.
 Features
