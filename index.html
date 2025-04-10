@@ -37,6 +37,40 @@
       position: relative;
       padding-bottom: 40px;
     }
+    .message-wrapper {
+      border: 5px solid #000080; /* Border hijau */
+      border-radius: 15px;
+      padding: 20px; /* Jarak dalam border */
+      margin: 10px auto; /* Posisi tengah secara horizontal */
+      max-width: 200px; /* Batasi panjang horizontal border */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .message-box {
+      background: url('https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeicl2ggu2svjmhynkpr5jxqpvp4bluajjz42z7ilyhm4zsjyk7mkku') no-repeat center center;
+      background-size: 170px 85px;
+      padding: 22px;
+      border-radius: 5px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      top: -10px;
+      width: 100%; /* Pastikan kotak pesan mengisi lebar wrapper */
+    }
+    .message-box span {
+      color: #000; /* Fallback color, akan diganti oleh JavaScript */
+      font-weight: bold;
+    }
+    .below-message-image {
+      display: block;
+      margin: -18px auto; /* Posisi tengah secara horizontal */
+      width: 100px; /* Ukuran default, bisa disesuaikan */
+      height: auto; /* Menjaga rasio aspek */
+      border-radius: 5px; /* Sudut melengkung opsional */
+    }
     .logo-inside {
       width: 100px;
       height: 100px;
@@ -327,7 +361,7 @@
   <div class="overlay" id="popupOverlay"></div>
   <div class="popup" id="nftPopup">
     <h2>Hello on Tea</h2>
-    <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeiageou2qvzdpiqjfr5lfzxvc4usucdswqw3yqu36tjvcor7scm5yq" alt="NFT Image">
+    <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeiageou2qvzdpiqjfr5lfzxvc4usucdswqw3yqu36tjvcor7scm5yq" alt="NFT Image" loading="lazy">
     <p class="nft-contract-address">Contract: 0xFbA581414A171B940001295B8BB61584EA43Ad86</p>
     <p class="nft-supply-info" id="nftSupplyInfo">Minted: Loading... / 10,000</p>
     <p>A special NFT from 'Hello on Tea' DApp, celebrating your contribution on Tea Sepolia Testnet!</p>
@@ -339,14 +373,19 @@
   </div>
   <div class="container">
     <div class="content-box">
-      <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside">
+      <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreigo3jtctoslylhq2bv4ncfcdbbio5sui6qothcr4uml7dwydzvwq4" alt="Logo Inside" class="logo-inside" loading="lazy">
       <h1>Hello on Tea</h1>
       <div class="wallet-section">
         <button id="connectButton">Connect Wallet</button>
         <p>Wallet: <span id="account">Not connected</span></p>
       </div>
       <div class="contract-section">
-        <p>Message: <span id="currentMessage">Loading...</span></p>
+        <div class="message-wrapper">
+          <div class="message-box">
+            <span id="currentMessage">Loading...</span>
+          </div>
+          <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeifiqdt73vgfqah62n677ty36ihlr4xnsltj6vkvsrlt7zdde4gfge" alt="Below Message Image" class="below-message-image" loading="lazy">
+        </div>
         <p>Total Clicks: <span id="clickCount">Loading...</span></p>
         <p>Total Wallets Interacted: <span id="totalWallets">Loading...</span></p>
         <p class="contract-address">Contract: 0x073CF9B93A3F40A4B5e8634DA06Bf5A63545780E</p>
@@ -384,8 +423,22 @@
       <div class="footer-text">Build by <a href="https://x.com/0xdor" target="_blank" rel="noopener noreferrer">@0xdor</a></div>
     </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" async></script>
   <script>
+    // Function to generate a random dark color
+    function getRandomDarkColor() {
+      const r = Math.floor(Math.random() * 128); // 0-127 to keep it dark
+      const g = Math.floor(Math.random() * 128);
+      const b = Math.floor(Math.random() * 128);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // Apply random dark color initially
+    document.addEventListener('DOMContentLoaded', () => {
+      const messageSpan = document.querySelector('.message-box span');
+      messageSpan.style.color = getRandomDarkColor();
+    });
+
     console.log('Ethers.js loaded:', typeof ethers);
     const teaSepoliaConfig = {
       chainId: '0x27ea',
@@ -538,6 +591,9 @@
         const count = await contract.clickCount();
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
+
+        // Update text color to a random dark color every time the message updates
+        currentMessageDisplay.style.color = getRandomDarkColor();
 
         const filter = contract.filters.HelloSaid(null);
         const events = await contract.queryFilter(filter);
