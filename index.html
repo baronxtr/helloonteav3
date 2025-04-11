@@ -29,6 +29,7 @@
       width: 100%;
       color: #fff;
       position: relative;
+      z-index: 10; /* Ensure container is above loading image */
     }
     .content-box {
       border: 2px solid #000080;
@@ -38,7 +39,7 @@
       padding-bottom: 40px;
     }
     .message-wrapper {
-      border: 5px solid #000080; /* Border hijau */
+      border: 7px solid #000080; /* Navy border */
       border-radius: 15px;
       padding: 20px; /* Jarak dalam border */
       margin: 10px auto; /* Posisi tengah secara horizontal */
@@ -46,6 +47,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      background: url('https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreig3cq66j7uh5q65pqicty64pkvki4o3m2wmswo2ujdfqcyd5p7q2u') no-repeat center center;
+      background-size: contain; /* Ensure the image fits within the wrapper */
+      box-sizing: border-box; /* Ensure padding and border are included in width */
     }
     .message-box {
       background: url('https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeicl2ggu2svjmhynkpr5jxqpvp4bluajjz42z7ilyhm4zsjyk7mkku') no-repeat center center;
@@ -355,9 +359,20 @@
       0% { transform: translateX(100%); }
       100% { transform: translateX(-100%); }
     }
+    .loading-image {
+      display: none; /* Initially hidden */
+      position: fixed;
+      top: 50%; /* Center vertically */
+      left: 50%; /* Center horizontally */
+      transform: translate(-50%, -50%); /* Adjust for image dimensions */
+      width: 200px; /* Adjustable size */
+      height: auto; /* Maintain aspect ratio */
+      z-index: 1001; /* Above other elements but below popups */
+    }
   </style>
 </head>
 <body>
+  <img src="https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreidon7gjte4e6q4qgugpdzhsb3ptlxsabg62qr64x54khwkycz76qi" alt="Loading" class="loading-image" id="loadingImage" loading="lazy">
   <div class="overlay" id="popupOverlay"></div>
   <div class="popup" id="nftPopup">
     <h2>Hello on Tea</h2>
@@ -506,6 +521,7 @@
     const nftSupplyInfo = document.getElementById('nftSupplyInfo');
     const mintProgressPopup = document.getElementById('mintProgressPopup');
     const mintProgressMessage = document.getElementById('mintProgressMessage');
+    const loadingImage = document.getElementById('loadingImage');
 
     const inappropriateWords = [
       "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
@@ -532,6 +548,15 @@
         return { isValid: false, error: "Links are not allowed to prevent spam or phishing." };
       }
       return { isValid: true };
+    }
+
+    function showLoadingImage() {
+      loadingImage.style.display = 'block';
+      setTimeout(hideLoadingImage, 4000); // Hide after 4 seconds
+    }
+
+    function hideLoadingImage() {
+      loadingImage.style.display = 'none';
     }
 
     async function connectWallet() {
@@ -647,7 +672,8 @@
     async function handleSayHello() {
       try {
         console.log('Sending sayHello transaction...');
-        const tx = await contract.sayHello();
+        const tx = await contract.sayHello(); // User signs here
+        showLoadingImage(); // Show loading image after signing
         await tx.wait();
         console.log('Hello said!');
         updateContractData();
@@ -681,7 +707,8 @@
       try {
         errorMessageDisplay.style.display = "none";
         console.log('Sending setMessage transaction...');
-        const tx = await contract.setMessage(newMessage);
+        const tx = await contract.setMessage(newMessage); // User signs here
+        showLoadingImage(); // Show loading image after signing
         await tx.wait();
         console.log('Message updated!');
         newMessageInput.value = '';
