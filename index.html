@@ -452,6 +452,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const messageSpan = document.querySelector('.message-box span');
       messageSpan.style.color = getRandomDarkColor();
+      setupEventListener(); // Setup event listener on page load
     });
 
     console.log('Ethers.js loaded:', typeof ethers);
@@ -557,6 +558,20 @@
 
     function hideLoadingImage() {
       loadingImage.style.display = 'none';
+    }
+
+    async function setupEventListener() {
+      // Initialize provider without signer (for read-only access)
+      const readOnlyProvider = new ethers.providers.JsonRpcProvider(teaSepoliaConfig.rpcUrls[0]);
+      const readOnlyContract = new ethers.Contract(contractAddress, contractABI, readOnlyProvider);
+
+      // Listen for HelloSaid events from any user
+      readOnlyContract.on('HelloSaid', (user, message, count, event) => {
+        console.log(`Event detected - User: ${user}, Message: ${message}, Count: ${count}`);
+        updateContractData(); // Update UI whenever event is emitted
+      });
+
+      console.log('Event listener setup for HelloSaid');
     }
 
     async function connectWallet() {
