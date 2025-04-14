@@ -29,7 +29,7 @@
       width: 100%;
       color: #fff;
       position: relative;
-      z-index: 10; /* Ensure container is above loading image */
+      z-index: 10;
     }
     .content-box {
       border: 2px solid #000080;
@@ -39,17 +39,17 @@
       padding-bottom: 40px;
     }
     .message-wrapper {
-      border: 7px solid #000080; /* Navy border */
+      border: 7px solid #000080;
       border-radius: 15px;
-      padding: 20px; /* Jarak dalam border */
-      margin: 10px auto; /* Posisi tengah secara horizontal */
-      max-width: 200px; /* Batasi panjang horizontal border */
+      padding: 20px;
+      margin: 10px auto;
+      max-width: 200px;
       display: flex;
       flex-direction: column;
       align-items: center;
       background: url('https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafkreig3cq66j7uh5q65pqicty64pkvki4o3m2wmswo2ujdfqcyd5p7q2u') no-repeat center center;
-      background-size: contain; /* Ensure the image fits within the wrapper */
-      box-sizing: border-box; /* Ensure padding and border are included in width */
+      background-size: contain;
+      box-sizing: border-box;
     }
     .message-box {
       background: url('https://fcb2f4e08c25f8c7f8e218352d8f51d0.ipfs.4everland.link/ipfs/bafybeicl2ggu2svjmhynkpr5jxqpvp4bluajjz42z7ilyhm4zsjyk7mkku') no-repeat center center;
@@ -62,18 +62,18 @@
       justify-content: center;
       position: relative;
       top: -10px;
-      width: 100%; /* Pastikan kotak pesan mengisi lebar wrapper */
+      width: 100%;
     }
     .message-box span {
-      color: #000; /* Fallback color, akan diganti oleh JavaScript */
+      color: #000;
       font-weight: bold;
     }
     .below-message-image {
       display: block;
-      margin: -18px auto; /* Posisi tengah secara horizontal */
-      width: 100px; /* Ukuran default, bisa disesuaikan */
-      height: auto; /* Menjaga rasio aspek */
-      border-radius: 5px; /* Sudut melengkung opsional */
+      margin: -18px auto;
+      width: 100px;
+      height: auto;
+      border-radius: 5px;
     }
     .logo-inside {
       width: 100px;
@@ -116,6 +116,14 @@
     #mintNFTButton, #sayHelloButton {
       width: 150px;
       margin: 5px;
+    }
+    #bubbleTeaButton {
+      background-color: #ff69b4; /* Pink color for Bubble Tea Maker */
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    #bubbleTeaButton:hover {
+      background-color: #ff1493;
     }
     input {
       font-family: 'Arial', sans-serif;
@@ -353,21 +361,67 @@
       color: #ffcc00;
       white-space: nowrap;
       display: inline-block;
-      animation: marquee 20s linear infinite; /* Diperpanjang menjadi 25 detik untuk teks yang lebih panjang */
+      animation: marquee 20s linear infinite;
     }
     @keyframes marquee {
       0% { transform: translateX(100%); }
       100% { transform: translateX(-100%); }
     }
     .loading-image {
-      display: none; /* Initially hidden */
+      display: none;
       position: fixed;
-      top: 50%; /* Center vertically */
-      left: 50%; /* Center horizontally */
-      transform: translate(-50%, -50%); /* Adjust for image dimensions */
-      width: 200px; /* Adjustable size */
-      height: auto; /* Maintain aspect ratio */
-      z-index: 1001; /* Above other elements but below popups */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: auto;
+      z-index: 1001;
+    }
+    .game-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1002;
+      overflow: hidden;
+    }
+    .game-popup iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4d;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 1003;
+    }
+    .close-button:hover {
+      background: #cc0000;
+    }
+    @media (max-width: 768px) {
+      .game-popup iframe {
+        width: 100%;
+        height: 100%;
+        transform: scale(0.7);
+        transform-origin: center center;
+      }
+    }
+    @media (min-width: 769px) {
+      .game-popup iframe {
+        width: 100%;
+        height: 100%;
+      }
     }
   </style>
 </head>
@@ -385,6 +439,10 @@
   <div class="popup" id="mintProgressPopup">
     <h2>Minting Progress</h2>
     <p id="mintProgressMessage">Please wait, NFT being minted...</p>
+  </div>
+  <div class="game-popup" id="gamePopup">
+    <button class="close-button" id="closeGameButton">X</button>
+    <iframe src="https://bubbletea2-qn86.4everland.app" title="Bubble Tea Game"></iframe>
   </div>
   <div class="container">
     <div class="content-box">
@@ -417,6 +475,7 @@
           </div>
         </div>
         <div class="share-buttons">
+          <button id="bubbleTeaButton">Bubble Tea Maker</button>
           <button id="twitterShareButton" class="twitter-share-button">Share on Twitter</button>
           <button id="farcasterShareButton" class="farcaster-share-button">Share on Farcaster</button>
         </div>
@@ -442,7 +501,7 @@
   <script>
     // Function to generate a random dark color
     function getRandomDarkColor() {
-      const r = Math.floor(Math.random() * 128); // 0-127 to keep it dark
+      const r = Math.floor(Math.random() * 128);
       const g = Math.floor(Math.random() * 128);
       const b = Math.floor(Math.random() * 128);
       return `rgb(${r}, ${g}, ${b})`;
@@ -452,7 +511,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const messageSpan = document.querySelector('.message-box span');
       messageSpan.style.color = getRandomDarkColor();
-      setupEventListener(); // Setup event listener on page load
+      setupEventListener();
     });
 
     console.log('Ethers.js loaded:', typeof ethers);
@@ -523,6 +582,9 @@
     const mintProgressPopup = document.getElementById('mintProgressPopup');
     const mintProgressMessage = document.getElementById('mintProgressMessage');
     const loadingImage = document.getElementById('loadingImage');
+    const bubbleTeaButton = document.getElementById('bubbleTeaButton');
+    const gamePopup = document.getElementById('gamePopup');
+    const closeGameButton = document.getElementById('closeGameButton');
 
     const inappropriateWords = [
       "damn", "fuck", "shit", "bitch", "asshole", "porn", "sex", "nude", "xxx",
@@ -553,22 +615,28 @@
 
     function showLoadingImage() {
       loadingImage.style.display = 'block';
-      setTimeout(hideLoadingImage, 4000); // Hide after 4 seconds
+      setTimeout(hideLoadingImage, 4000);
     }
 
     function hideLoadingImage() {
       loadingImage.style.display = 'none';
     }
 
+    function showGamePopup() {
+      gamePopup.style.display = 'block';
+    }
+
+    function hideGamePopup() {
+      gamePopup.style.display = 'none';
+    }
+
     async function setupEventListener() {
-      // Initialize provider without signer (for read-only access)
       const readOnlyProvider = new ethers.providers.JsonRpcProvider(teaSepoliaConfig.rpcUrls[0]);
       const readOnlyContract = new ethers.Contract(contractAddress, contractABI, readOnlyProvider);
 
-      // Listen for HelloSaid events from any user
       readOnlyContract.on('HelloSaid', (user, message, count, event) => {
         console.log(`Event detected - User: ${user}, Message: ${message}, Count: ${count}`);
-        updateContractData(); // Update UI whenever event is emitted
+        updateContractData();
       });
 
       console.log('Event listener setup for HelloSaid');
@@ -632,7 +700,6 @@
         currentMessageDisplay.textContent = message;
         clickCountDisplay.textContent = count.toString();
 
-        // Update text color to a random dark color every time the message updates
         currentMessageDisplay.style.color = getRandomDarkColor();
 
         const filter = contract.filters.HelloSaid(null);
@@ -687,8 +754,8 @@
     async function handleSayHello() {
       try {
         console.log('Sending sayHello transaction...');
-        const tx = await contract.sayHello(); // User signs here
-        showLoadingImage(); // Show loading image after signing
+        const tx = await contract.sayHello();
+        showLoadingImage();
         await tx.wait();
         console.log('Hello said!');
         updateContractData();
@@ -722,8 +789,8 @@
       try {
         errorMessageDisplay.style.display = "none";
         console.log('Sending setMessage transaction...');
-        const tx = await contract.setMessage(newMessage); // User signs here
-        showLoadingImage(); // Show loading image after signing
+        const tx = await contract.setMessage(newMessage);
+        showLoadingImage();
         await tx.wait();
         console.log('Message updated!');
         newMessageInput.value = '';
@@ -770,7 +837,7 @@
         console.log('NFT minted! Transaction hash:', receipt.transactionHash);
         const txHashLink = `<a href="https://sepolia.tea.xyz/tx/${receipt.transactionHash}" target="_blank">View Transaction</a>`;
         showMintProgressPopup(`Successfully minted NFT! ${txHashLink}`);
-        setTimeout(hideMintProgressPopup, 5000); // Hide after 5 seconds
+        setTimeout(hideMintProgressPopup, 5000);
         updateNFTSupply();
         hideNFTPopup();
       } catch (error) {
@@ -782,7 +849,7 @@
         } else {
           showMintProgressPopup(`Failed to mint NFT: ${error.message}`);
         }
-        setTimeout(hideMintProgressPopup, 5000); // Hide after 5 seconds
+        setTimeout(hideMintProgressPopup, 5000);
       }
     }
 
@@ -858,6 +925,9 @@
         updateContractData();
       }
     });
+
+    bubbleTeaButton.addEventListener('click', showGamePopup);
+    closeGameButton.addEventListener('click', hideGamePopup);
 
     connectButton.addEventListener('click', connectWallet);
     sayHelloButton.addEventListener('click', handleSayHello);
